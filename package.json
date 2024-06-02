@@ -1,0 +1,30 @@
+{
+    "name": "log-reader",
+    "version": "1.0.0",
+    "description": "An on-demand REST service to read and retrieve log files",
+    "main": "dist/server.js",
+    "scripts": {
+        "start": "node dist/server.js",
+        "compile": "npx tsc",
+        "test": "jest"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/holgerj4n/log-reader.git"
+    },
+    "author": "holgerj4n",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/holgerj4n/log-reader/issues"
+    },
+    "homepage": "https://github.com/holgerj4n/log-reader#readme",
+    "devDependencies": {
+        "@tsconfig/node21": "^21.0.3",
+        "@types/express": "^4.17.21",
+        "@types/node": "^20.14.0",
+        "typescript": "^5.4.5"
+    },
+    "dependencies": {
+        "express": "^4.19.2"
+    }
+}
