@@ -13,6 +13,6 @@ export function handleError(res: Response, err: any) {
             break;
         default:
             console.error(err);
-            res.status(500).send(err.message);
+            res.status(500).send(err.message ?? "Internal Server Error");
     }
 }
