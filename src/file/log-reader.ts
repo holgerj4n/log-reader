@@ -22,16 +22,25 @@ export class LogReader implements FileOps {
             const filePath = path.join(this.logDir, params.fileName);
             const stream = fs.createReadStream(filePath, "utf-8");
             const lines: string[] = [];
+            const numLines = params.limit ?? 10;
             let buffer: string = '';
 
             stream.on('data', chunk => {
                 buffer += String(chunk);
                 const parts = buffer.split('\n');
-                lines.push(...parts.slice(0, -1));
+                const completed = parts.slice(0, -1)
+                    .filter(line => params.search ? line.match(params.search) : line);
+                lines.push(...completed);
                 buffer = parts.pop() ?? '';
+                if (lines.length > numLines) {
+                    lines.splice(0, lines.length - numLines);
+                }
             });
             stream.on('end', () => {
-                if (buffer) lines.push(buffer);
+                if (buffer) {
+                    lines.push(buffer);
+                    if (lines.length > numLines) lines.shift();
+                }
                 resolve(lines.reverse());
             });
             stream.on('error', (err) => {
