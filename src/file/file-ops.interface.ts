@@ -4,5 +4,5 @@ export interface FileOps {
 
     getFileNames: () => Promise<string[]>,
 
-    getMostRecentEntries: (params: FileRequestParams) => string[]
+    getMostRecentEntries: (params: FileRequestParams) => Promise<string[]>
 }

@@ -9,8 +9,10 @@ export class Controller {
         res.json({ files: result });
     }
 
-    getLogs(req: Request, res: Response) {
-        const result = this.fileOps.getMostRecentEntries({ fileName: req.params.filename });
+    async getLogs(req: Request, res: Response) {
+        const result = await this.fileOps.getMostRecentEntries({
+            fileName: req.params.filename,
+        });
         res.json({ logs: result });
     }
 }

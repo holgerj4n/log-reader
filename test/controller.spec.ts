@@ -10,7 +10,7 @@ describe('Controller', () => {
 
     const mockFileOps: FileOps = {
         getFileNames: () => Promise.resolve([]),
-        getMostRecentEntries: () => []
+        getMostRecentEntries: () => Promise.resolve([])
     }
 
     beforeAll(() => {
@@ -35,7 +35,7 @@ describe('Controller', () => {
 
     it('should return logs', async () => {
         const expected = ["line1", "line2"];
-        jest.spyOn(mockFileOps, 'getMostRecentEntries').mockReturnValueOnce(expected);
+        jest.spyOn(mockFileOps, 'getMostRecentEntries').mockResolvedValueOnce(expected);
         const response = await request(testApp).get('/logs/messages.log');
 
         expect(response.status).toEqual(200);
