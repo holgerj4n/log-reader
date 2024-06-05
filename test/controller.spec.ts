@@ -33,6 +33,15 @@ describe('Controller', () => {
         expect(response.body).toEqual({ files: expected });
     });
 
+    it('should return an error if the directory does not exist', async () => {
+        const error = { code: 'ENOTDIR', path: 'teapot' };
+        jest.spyOn(mockFileOps, 'getFileNames').mockRejectedValueOnce(error);
+        const response = await request(testApp).get('/files');
+
+        expect(response.status).toEqual(400);
+        expect(response.text).toMatch(error.path);
+    });
+
     it('should return logs', async () => {
         const expected = ["line1", "line2"];
         jest.spyOn(mockFileOps, 'getMostRecentEntries').mockResolvedValueOnce(expected);
@@ -41,6 +50,23 @@ describe('Controller', () => {
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({ logs: expected });
     })
+
+    it('should return an error if the file name is not valid', async () => {
+        const error = { code: 'EISDIR' };
+        jest.spyOn(mockFileOps, 'getMostRecentEntries').mockRejectedValueOnce(error);
+        const response = await request(testApp).get('/logs/messages.log');
+
+        expect(response.status).toEqual(400);
+    });
+
+    it('should return an error if the file does not exist', async () => {
+        const error = { code: 'ENOENT', path: 'teapot' };
+        jest.spyOn(mockFileOps, 'getMostRecentEntries').mockRejectedValueOnce(error);
+        const response = await request(testApp).get('/logs/messages.log');
+
+        expect(response.status).toEqual(404);
+        expect(response.text).toMatch(error.path);
+    });
 
     afterEach(() => {
         jest.restoreAllMocks();
