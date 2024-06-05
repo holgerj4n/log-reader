@@ -2,7 +2,7 @@ import { FileRequestParams } from "./../model/file-request-params";
 
 export interface FileOps {
 
-    getFileNames: () => string[],
+    getFileNames: () => Promise<string[]>,
 
     getMostRecentEntries: (params: FileRequestParams) => string[]
 }

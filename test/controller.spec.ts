@@ -9,7 +9,7 @@ describe('Controller', () => {
     let testApp: any;
 
     const mockFileOps: FileOps = {
-        getFileNames: () => [],
+        getFileNames: () => Promise.resolve([]),
         getMostRecentEntries: () => []
     }
 
@@ -26,7 +26,7 @@ describe('Controller', () => {
 
     it('should return file names', async () => {
         const expected = ["file1.txt", "file2.json"];
-        jest.spyOn(mockFileOps, 'getFileNames').mockReturnValueOnce(expected);
+        jest.spyOn(mockFileOps, 'getFileNames').mockResolvedValueOnce(expected);
         const response = await request(testApp).get('/files');
 
         expect(response.status).toEqual(200);

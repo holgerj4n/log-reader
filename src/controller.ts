@@ -4,8 +4,8 @@ import { FileOps } from "./file/file-ops.interface";
 export class Controller {
     constructor(private readonly fileOps: FileOps) {}
 
-    getFileNames(_: Request, res: Response) {
-        const result = this.fileOps.getFileNames();
+    async getFileNames(_: Request, res: Response) {
+        const result = await this.fileOps.getFileNames();
         res.json({ files: result });
     }
 

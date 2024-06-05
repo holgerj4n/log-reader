@@ -3,7 +3,7 @@ import { Controller } from "./controller";
 import { LogReader } from "./file/log-reader";
 
 const port = 3000;
-const logDir = process.env.LOG_DIR || "/var/log/";
+const logDir = process.argv[2] || process.env.LOG_DIR || "/var/log/";
 
 const logReader = new LogReader(logDir);
 const controller = new Controller(logReader);
