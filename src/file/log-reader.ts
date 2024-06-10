@@ -18,34 +18,28 @@ export class LogReader implements FileOps {
     }
 
     async getMostRecentEntries(params: FileRequestParams): Promise<string[]> {
-        return new Promise((resolve, reject) => {
-            const filePath = path.join(this.logDir, params.fileName);
-            const stream = fs.createReadStream(filePath, "utf-8");
-            const lines: string[] = [];
-            const numLines = params.limit ?? 10;
-            let buffer: string = '';
+        const filePath = path.join(this.logDir, params.fileName);
+        const stat = await fsPromise.stat(filePath);
+        const lines: string[] = [];
+        const numLines = params.limit ?? 10;
+        let position = stat.size;
+        let remaining = '';
 
-            stream.on('data', chunk => {
-                buffer += String(chunk);
-                const parts = buffer.split('\n');
-                const completed = parts.slice(0, -1)
-                    .filter(line => params.search ? line.match(params.search) : line);
-                lines.push(...completed);
-                buffer = parts.pop() ?? '';
-                if (lines.length > numLines) {
-                    lines.splice(0, lines.length - numLines);
-                }
-            });
-            stream.on('end', () => {
-                if (buffer) {
-                    lines.push(buffer);
-                    if (lines.length > numLines) lines.shift();
-                }
-                resolve(lines.reverse());
-            });
-            stream.on('error', (err) => {
-                reject(err);
-            });
-        });
+        const filterFn = (line: string) => params.search ? line.match(params.search) : line;
+
+        const handle = await fsPromise.open(filePath);
+        do {
+            const blockSize = Math.min(position, 1024);
+            position -= blockSize;
+            const { buffer } = await handle.read(Buffer.alloc(blockSize), 0, blockSize, position);
+            remaining = buffer + remaining;
+            const parts = remaining.split('\n');
+            remaining = parts.shift() ?? '';
+            lines.push(...parts.filter(filterFn).reverse());
+        } while (lines.length < numLines && position > 0);
+
+        handle.close();
+        if (remaining) lines.push(remaining);
+        return lines.slice(0, numLines);
     }
 }
